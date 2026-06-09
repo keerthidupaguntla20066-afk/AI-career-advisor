@@ -1,0 +1,1612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CareerAI — Advanced Interactive Career Advisor</title>
+    <meta name="description" content="Identify your ideal career path, map out skill gaps, analyze salary potentials, and build a 12-month roadmap using our advanced interactive labor market simulator.">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* Modern Reset & CSS Variables */
+        :root {
+            --bg-dark: #06060c;
+            --bg-card: #0d0d18;
+            --bg-card-hover: #121224;
+            --primary: #8b5cf6;
+            --primary-grad: linear-gradient(135deg, #a78bfa 0%, #7c3aed 100%);
+            --secondary: #06b6d4;
+            --secondary-grad: linear-gradient(135deg, #22d3ee 0%, #0891b2 100%);
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --border-color: rgba(255, 255, 255, 0.08);
+            --border-hover: rgba(139, 92, 246, 0.3);
+            --font-head: 'Space Grotesk', sans-serif;
+            --font-body: 'Inter', sans-serif;
+            --shadow-glow: 0 0 30px rgba(139, 92, 246, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: var(--font-body);
+            overflow-x: hidden;
+        }
+
+        body {
+            position: relative;
+            background: 
+                radial-gradient(circle at 5% 10%, rgba(139, 92, 246, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 95% 85%, rgba(6, 182, 212, 0.06) 0%, transparent 45%);
+            background-attachment: fixed;
+            min-height: 100vh;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: var(--font-head);
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+        }
+
+        /* App Layout Container */
+        .app-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 120px 24px 80px;
+        }
+
+        /* Glassmorphism Navigation */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            background-color: rgba(6, 6, 12, 0.7);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .nav-content {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 20px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: #fff;
+            font-family: var(--font-head);
+            font-size: 1.6rem;
+            font-weight: 700;
+        }
+
+        .brand span {
+            background: var(--primary-grad);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .badge-status {
+            background: rgba(6, 182, 212, 0.1);
+            border: 1px solid rgba(6, 182, 212, 0.25);
+            color: var(--secondary);
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 6px 12px;
+            border-radius: 100px;
+            letter-spacing: 0.02em;
+        }
+
+        /* Onboarding Multi-step Wizard */
+        .wizard-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 32px;
+            padding: 48px;
+            box-shadow: var(--shadow-glow);
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .wizard-header {
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .wizard-header h2 {
+            font-size: 2.2rem;
+            margin-bottom: 12px;
+            background: linear-gradient(to right, #fff, #c084fc, #22d3ee);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 6px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            margin: 24px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--primary-grad);
+            width: 16.6%;
+            border-radius: 10px;
+            transition: width 0.4s ease-in-out;
+        }
+
+        .step-indicators {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 40px;
+        }
+
+        .step-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            transition: all 0.3s;
+        }
+
+        .step-dot.active {
+            background: var(--primary);
+            box-shadow: 0 0 10px var(--primary);
+            transform: scale(1.2);
+        }
+
+        .step-dot.completed {
+            background: var(--secondary);
+        }
+
+        /* Form Steps Content */
+        .form-step {
+            display: none;
+            animation: fadeIn 0.4s ease-in-out forwards;
+        }
+
+        .form-step.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 28px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+
+        .form-group input, 
+        .form-group textarea, 
+        .form-group select {
+            width: 100%;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px;
+            color: #fff;
+            font-family: var(--font-body);
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus, 
+        .form-group textarea:focus, 
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: rgba(255,255,255,0.05);
+            box-shadow: 0 0 15px rgba(139, 92, 246, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        /* Buttons & Actions */
+        .wizard-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .btn-primary {
+            background: var(--primary-grad);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.2);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(139, 92, 246, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-muted);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+
+        .btn-disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        /* Mock AI Processing Screen */
+        .processing-card {
+            display: none;
+            text-align: center;
+            padding: 64px 48px;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        .loader-ring {
+            width: 80px;
+            height: 80px;
+            border: 4px dashed var(--primary);
+            border-top: 4px solid var(--secondary);
+            border-radius: 50%;
+            margin: 0 auto 32px;
+            animation: spin 1.5s infinite linear;
+        }
+
+        .processing-tasks {
+            max-width: 400px;
+            margin: 32px auto 0;
+            text-align: left;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 24px;
+        }
+
+        .task-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            transition: color 0.3s;
+        }
+
+        .task-item.active {
+            color: var(--secondary);
+            font-weight: 500;
+        }
+
+        .task-item.completed {
+            color: var(--accent-green);
+        }
+
+        .task-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+        }
+
+        .task-item.active .task-dot {
+            background: var(--secondary);
+            box-shadow: 0 0 8px var(--secondary);
+            animation: pulse-glow 1s infinite alternate;
+        }
+
+        .task-item.completed .task-dot {
+            background: var(--accent-green);
+        }
+
+        /* Dashboard & Recommendations Grid */
+        .dashboard-section {
+            display: none;
+            animation: fadeIn 0.6s ease-in-out;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 40px;
+        }
+
+        /* Profile Recap Card */
+        .profile-recap {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.08) 0%, rgba(6, 182, 212, 0.05) 100%);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .profile-recap-text h3 {
+            font-size: 1.6rem;
+            margin-bottom: 8px;
+        }
+
+        /* Career Scorecard Table */
+        .card-table-wrap {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th, td {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            font-family: var(--font-head);
+            font-size: 1rem;
+            color: #fff;
+            background-color: rgba(255,255,255,0.02);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr {
+            transition: background 0.3s;
+            cursor: pointer;
+        }
+
+        tr:hover {
+            background-color: rgba(255,255,255,0.01);
+        }
+
+        .match-badge {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: var(--accent-green);
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            display: inline-block;
+        }
+
+        .demand-badge {
+            background: rgba(6, 182, 212, 0.1);
+            border: 1px solid rgba(6, 182, 212, 0.3);
+            color: var(--secondary);
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            display: inline-block;
+        }
+
+        .skills-tags {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            max-width: 320px;
+        }
+
+        .skill-tag {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--border-color);
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        /* Detailed Selection Layout */
+        .detail-card {
+            background-color: var(--bg-card);
+            border: 2px solid var(--primary);
+            border-radius: 32px;
+            padding: 48px;
+            margin-top: 40px;
+            box-shadow: var(--shadow-glow);
+            display: none;
+            animation: slideUp 0.5s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
+        }
+
+        .detail-card.active {
+            display: block;
+        }
+
+        .detail-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 40px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 24px;
+        }
+
+        .detail-header h3 {
+            font-size: 2.2rem;
+            margin-bottom: 12px;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 48px;
+        }
+
+        .detail-info-block {
+            margin-bottom: 32px;
+        }
+
+        .detail-info-block h4 {
+            font-size: 1.2rem;
+            margin-bottom: 12px;
+            color: var(--secondary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .detail-info-block p, .detail-info-block ul {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        .detail-info-block ul {
+            padding-left: 20px;
+        }
+
+        .detail-info-block li {
+            margin-bottom: 8px;
+        }
+
+        /* Learning Roadmap Tabs */
+        .roadmap-tabs-header {
+            display: flex;
+            gap: 12px;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 24px;
+        }
+
+        .roadmap-tab-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-family: var(--font-head);
+            font-size: 1rem;
+            font-weight: 600;
+            padding: 12px 20px;
+            cursor: pointer;
+            position: relative;
+            transition: color 0.3s;
+        }
+
+        .roadmap-tab-btn.active {
+            color: var(--primary);
+        }
+
+        .roadmap-tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--primary);
+        }
+
+        .roadmap-tab-content {
+            display: none;
+            animation: fadeIn 0.4s;
+        }
+
+        .roadmap-tab-content.active {
+            display: block;
+        }
+
+        /* Chat Panel (Docked Follow-up Chatbot) */
+        .chat-widget {
+            position: fixed;
+            bottom: 32px;
+            right: 32px;
+            width: 380px;
+            height: 500px;
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            z-index: 999;
+            transform: translateY(calc(100% + 40px));
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .chat-widget.active {
+            transform: translateY(0);
+        }
+
+        .chat-header {
+            background: var(--primary-grad);
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #fff;
+        }
+
+        .chat-header h4 {
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .chat-close-btn {
+            background: none;
+            border: none;
+            color: rgba(255,255,255,0.7);
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+
+        .chat-body {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .chat-bubble {
+            max-width: 80%;
+            padding: 12px 16px;
+            border-radius: 16px;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .chat-bubble.advisor {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border-color);
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+
+        .chat-bubble.user {
+            background: var(--primary-grad);
+            color: #fff;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+
+        .chat-suggestions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            padding: 10px 20px;
+            background: rgba(0,0,0,0.2);
+            border-top: 1px solid var(--border-color);
+        }
+
+        .suggestion-chip {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            padding: 6px 12px;
+            border-radius: 100px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .suggestion-chip:hover {
+            color: #fff;
+            border-color: var(--secondary);
+            background: rgba(6, 182, 212, 0.05);
+        }
+
+        .chat-footer {
+            padding: 16px;
+            display: flex;
+            gap: 12px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .chat-input {
+            flex-grow: 1;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 10px 14px;
+            color: #fff;
+            font-size: 0.9rem;
+        }
+
+        .chat-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .chat-send-btn {
+            background: var(--primary-grad);
+            border: none;
+            color: #fff;
+            border-radius: 8px;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .chat-send-btn:hover {
+            transform: scale(1.05);
+        }
+
+        /* Floating Toggle Chat Button */
+        .chat-toggle {
+            position: fixed;
+            bottom: 32px;
+            right: 32px;
+            background: var(--primary-grad);
+            color: #fff;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 30px rgba(139, 92, 246, 0.4);
+            border: 1px solid rgba(255,255,255,0.2);
+            cursor: pointer;
+            z-index: 998;
+            transition: transform 0.3s;
+        }
+
+        .chat-toggle:hover {
+            transform: scale(1.05);
+        }
+
+        .chat-toggle svg {
+            width: 24px;
+            height: 24px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes pulse-glow {
+            from { box-shadow: 0 0 5px rgba(6, 182, 212, 0.2); }
+            to { box-shadow: 0 0 15px rgba(6, 182, 212, 0.6); }
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 900px) {
+            .form-row { grid-template-columns: 1fr; }
+            .detail-grid { grid-template-columns: 1fr; gap: 32px; }
+            .wizard-card { padding: 24px; }
+            th, td { padding: 12px 14px; font-size: 0.9rem; }
+            .skills-tags { max-width: 200px; }
+        }
+
+        @media (max-width: 480px) {
+            .app-container { padding-top: 100px; }
+            .chat-widget { width: calc(100% - 40px); right: 20px; bottom: 20px; }
+            .chat-toggle { right: 20px; bottom: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <header>
+        <div class="nav-content">
+            <a href="#" class="brand">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="url(#saffron-grad)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="overflow:visible;">
+                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                    <defs>
+                        <linearGradient id="saffron-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#a78bfa" />
+                            <stop offset="100%" stop-color="#22d3ee" />
+                        </linearGradient>
+                    </defs>
+                </svg>
+                <span>CareerAI</span> Advisor
+            </a>
+            <div class="badge-status">
+                Labor Analytics v2026.6
+            </div>
+        </div>
+    </header>
+
+    <!-- App Main Workspace -->
+    <div class="app-container">
+
+        <!-- STEP WIZARD FORM -->
+        <div class="wizard-card" id="wizard-container">
+            <div class="wizard-header">
+                <h2>AI Career Navigator</h2>
+                <p>Complete the profile assessment below to analyze matching high-growth paths.</p>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="form-progress"></div>
+                </div>
+            </div>
+
+            <form id="advisor-form" onsubmit="event.preventDefault();">
+                <!-- Step 1: Education -->
+                <div class="form-step active" data-step="1">
+                    <h3 style="margin-bottom: 24px; font-size: 1.3rem;">Step 1: Education & Qualifications</h3>
+                    <div class="form-group">
+                        <label for="degree">Highest Qualification / Degree</label>
+                        <input type="text" id="degree" placeholder="e.g., Bachelor of Technology in Computer Science, self-taught web developer" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="fav-subjects">Favorite Academic Subjects or Fields</label>
+                        <input type="text" id="fav-subjects" placeholder="e.g., Algorithms, Business Strategy, Graphic Design, Mathematics">
+                    </div>
+                </div>
+
+                <!-- Step 2: Work Experience -->
+                <div class="form-step" data-step="2">
+                    <h3 style="margin-bottom: 24px; font-size: 1.3rem;">Step 2: Work Experience</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="experience-years">Years of Professional Experience</label>
+                            <select id="experience-years">
+                                <option value="0">Student / Entry-Level (0 years)</option>
+                                <option value="1-2">Junior (1 - 2 years)</option>
+                                <option value="3-5">Mid-Level (3 - 5 years)</option>
+                                <option value="6+">Senior / Management (6+ years)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="current-role">Current or Most Recent Job Title</label>
+                            <input type="text" id="current-role" placeholder="e.g., Front-end Intern, Business Analyst, None">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="experience-desc">Briefly describe your key responsibilities and projects</label>
+                        <textarea id="experience-desc" rows="3" placeholder="Explain what tasks you worked on and what technologies or tools you used."></textarea>
+                    </div>
+                </div>
+
+                <!-- Step 3: Skills -->
+                <div class="form-step" data-step="3">
+                    <h3 style="margin-bottom: 24px; font-size: 1.3rem;">Step 3: Technical & Soft Skills</h3>
+                    <div class="form-group">
+                        <label for="tech-skills">Hard / Technical Skills (comma separated)</label>
+                        <input type="text" id="tech-skills" placeholder="e.g., JavaScript, Python, React, Data Analysis, SQL, Sketching" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="soft-skills">Soft / Personal Skills (comma separated)</label>
+                        <input type="text" id="soft-skills" placeholder="e.g., Public Speaking, Project Management, Team Leadership, Problem Solving" required>
+                    </div>
+                </div>
+
+                <!-- Step 4: Interests & Strengths -->
+                <div class="form-step" data-step="4">
+                    <h3 style="margin-bottom: 24px; font-size: 1.3rem;">Step 4: Passions & Personal Attributes</h3>
+                    <div class="form-group">
+                        <label for="passions">Interests and Passions</label>
+                        <input type="text" id="passions" placeholder="e.g., building automation tools, sustainable energy, fintech, AI artwork">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="strengths">Core Strengths</label>
+                            <input type="text" id="strengths" placeholder="e.g., analytical thinking, organizing chaos">
+                        </div>
+                        <div class="form-group">
+                            <label for="weaknesses">Weaknesses / Areas of Dislike</label>
+                            <input type="text" id="weaknesses" placeholder="e.g., repetitive admin tasks, cold-calling sales">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 5: Preferences -->
+                <div class="form-step" data-step="5">
+                    <h3 style="margin-bottom: 24px; font-size: 1.3rem;">Step 5: Work Style & Expectations</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="work-style">Preferred Work Environment</label>
+                            <select id="work-style">
+                                <option value="Remote">100% Remote</option>
+                                <option value="Hybrid">Hybrid (Flexible Office/Home)</option>
+                                <option value="Office">In-Office Operations</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="min-salary">Minimum Salary Expectations (Annual)</label>
+                            <input type="text" id="min-salary" placeholder="e.g., $70,000 or ₹10,00,000" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="geographic-pref">Geographic Location Preference</label>
+                        <input type="text" id="geographic-pref" placeholder="e.g., Bangalore, India / Remote Global / Europe" required>
+                    </div>
+                </div>
+
+                <!-- Step 6: Goals -->
+                <div class="form-step" data-step="6">
+                    <h3 style="margin-bottom: 24px; font-size: 1.3rem;">Step 6: Career Goals & Industries</h3>
+                    <div class="form-group">
+                        <label for="long-term-goal">Long-Term Career Goals (3-5 years)</label>
+                        <input type="text" id="long-term-goal" placeholder="e.g., Lead an engineering team, start my own startup, become an AI researcher">
+                    </div>
+                    <div class="form-group">
+                        <label for="target-industries">Target Industries of Interest</label>
+                        <input type="text" id="target-industries" placeholder="e.g., Tech, Fintech, Healthcare, Creative Arts">
+                    </div>
+                </div>
+
+                <!-- Step Actions -->
+                <div class="wizard-actions">
+                    <button type="button" class="btn btn-secondary btn-disabled" id="prev-btn" onclick="changeStep(-1)">Back</button>
+                    <button type="button" class="btn btn-primary" id="next-btn" onclick="changeStep(1)">Next</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- LOADING / PROCESSING CARD -->
+        <div class="wizard-card processing-card" id="processing-container">
+            <div class="loader-ring"></div>
+            <h3 style="font-size: 1.8rem; margin-bottom: 12px;">Analyzing Labor Market Trends</h3>
+            <p>Our simulator is mapping your background to current industry vacancies, automation indices, and roadmap dependencies...</p>
+            
+            <div class="processing-tasks">
+                <div class="task-item" id="task-1"><span class="task-dot"></span>Parsing qualifications & skills...</div>
+                <div class="task-item" id="task-2"><span class="task-dot"></span>Evaluating automation index & risk ratios...</div>
+                <div class="task-item" id="task-3"><span class="task-dot"></span>Querying regional salary & demand indices...</div>
+                <div class="task-item" id="task-4"><span class="task-dot"></span>Generating learning roadmaps...</div>
+            </div>
+        </div>
+
+        <!-- MAIN DASHBOARD CONTENT -->
+        <div class="dashboard-section" id="dashboard-container">
+            <div class="dashboard-grid">
+                
+                <!-- Profile Summary Summary -->
+                <div class="profile-recap">
+                    <div class="profile-recap-text">
+                        <h3>Your Strategic Profile</h3>
+                        <p id="profile-summary-para">Analyzing match profiles based on your technical qualifications, work preferences, and regional settings.</p>
+                    </div>
+                    <button class="btn btn-secondary" onclick="restartWizard()">Reset Assessment</button>
+                </div>
+
+                <!-- Career Paths List -->
+                <div class="card-table-wrap">
+                    <div style="padding: 24px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+                        <h3 style="font-size: 1.4rem;">Top 5 Career Path Recommendations</h3>
+                        <span style="font-size: 0.85rem; color: var(--text-muted);">Click a row to expand detailed roadmap</span>
+                    </div>
+                    <table id="recommendations-table">
+                        <thead>
+                            <tr>
+                                <th>Career Path</th>
+                                <th>Match Score</th>
+                                <th>Est. Salary Range</th>
+                                <th>Market Demand</th>
+                                <th>Core Required Skills</th>
+                                <th>Time to Enter</th>
+                                <th>Long-Term Growth</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recommendations-body">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Details Panel -->
+                <div class="detail-card" id="detail-card-panel">
+                    <div class="detail-header">
+                        <div>
+                            <h3 id="panel-title">AI Solution Architect</h3>
+                            <p id="panel-desc">Designing full-stack intelligent infrastructure, model orchestrations, and cloud pipelines.</p>
+                        </div>
+                        <div style="display:flex; gap:12px;">
+                            <div class="match-badge" id="panel-match">92% Match</div>
+                            <div class="demand-badge" id="panel-demand">Critical Demand</div>
+                        </div>
+                    </div>
+
+                    <div class="detail-grid">
+                        <!-- Left: Core Text Details -->
+                        <div>
+                            <div class="detail-info-block">
+                                <h4>Why This Path Fits You</h4>
+                                <p id="panel-why-fits">Matches your engineering qualification, Javascript skills, and team leadership traits.</p>
+                            </div>
+
+                            <div class="detail-info-block">
+                                <h4>Your Specific Skill Gaps to Close</h4>
+                                <ul id="panel-gaps">
+                                    <li>No deep model engineering credentials.</li>
+                                    <li>Needs validation in cloud pipelines.</li>
+                                </ul>
+                            </div>
+
+                            <div class="detail-info-block">
+                                <h4>Alternatives You Might Have Overlooked</h4>
+                                <p id="panel-alternatives">Developer Advocate (DevRel) or Platform Infrastructure Engineer.</p>
+                            </div>
+
+                            <div class="detail-info-block" style="border: 1px solid rgba(239, 68, 68, 0.2); background: rgba(239, 68, 68, 0.02); padding: 20px; border-radius: 16px;">
+                                <h4 style="color: var(--accent-red);">Blind Spots & Critical Risks</h4>
+                                <p id="panel-risks" style="color: #fda4af;">Note that rapid framework commoditization means code-generation AI is highly saturated; you must index heavily on deep analytical system-level design to avoid pricing compression.</p>
+                            </div>
+                        </div>
+
+                        <!-- Right: Roadmap Details -->
+                        <div>
+                            <h4 style="font-size: 1.2rem; color: #fff; margin-bottom: 20px;">Your 12-Month Preparation Roadmap</h4>
+                            
+                            <div class="roadmap-tabs-header">
+                                <button class="roadmap-tab-btn active" onclick="switchRoadmapTab(3)">3 Months</button>
+                                <button class="roadmap-tab-btn" onclick="switchRoadmapTab(6)">6 Months</button>
+                                <button class="roadmap-tab-btn" onclick="switchRoadmapTab(12)">12 Months</button>
+                            </div>
+
+                            <div class="roadmap-tab-content active" id="roadmap-content-3">
+                                <div class="detail-info-block">
+                                    <h5 style="color:#fff; margin-bottom:10px;">Core Milestones & Studies</h5>
+                                    <p id="roadmap-milestones-3">Build projects and read docs.</p>
+                                </div>
+                                <div class="detail-info-block">
+                                    <h5 style="color:#fff; margin-bottom:10px;">Certs & Resources</h5>
+                                    <p id="roadmap-resources-3">AWS Certified Cloud Practitioner.</p>
+                                </div>
+                            </div>
+
+                            <div class="roadmap-tab-content" id="roadmap-content-6">
+                                <div class="detail-info-block">
+                                    <h5 style="color:#fff; margin-bottom:10px;">Core Milestones & Studies</h5>
+                                    <p id="roadmap-milestones-6">Build projects and read docs.</p>
+                                </div>
+                                <div class="detail-info-block">
+                                    <h5 style="color:#fff; margin-bottom:10px;">Certs & Resources</h5>
+                                    <p id="roadmap-resources-6">AWS Developer Associate.</p>
+                                </div>
+                            </div>
+
+                            <div class="roadmap-tab-content" id="roadmap-content-12">
+                                <div class="detail-info-block">
+                                    <h5 style="color:#fff; margin-bottom:10px;">Core Milestones & Studies</h5>
+                                    <p id="roadmap-milestones-12">Build projects and read docs.</p>
+                                </div>
+                                <div class="detail-info-block">
+                                    <h5 style="color:#fff; margin-bottom:10px;">Certs & Resources</h5>
+                                    <p id="roadmap-resources-12">AWS Solution Architect Professional.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <!-- FLOATING CHATBOT PRESETS -->
+    <button class="chat-toggle" id="chat-toggle-btn" onclick="toggleChat()">
+        <!-- Message bubble icon -->
+        <svg viewBox="0 0 24 24">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        </svg>
+    </button>
+
+    <div class="chat-widget" id="chat-widget-panel">
+        <div class="chat-header">
+            <h4>
+                <!-- Advisor icon -->
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+                    <line x1="12" y1="17" x2="12.01" y2="17"/>
+                </svg>
+                AI Mentor Chat
+            </h4>
+            <button class="chat-close-btn" onclick="toggleChat()">✕</button>
+        </div>
+        <div class="chat-body" id="chat-messages">
+            <div class="chat-bubble advisor">
+                Hello! Complete your assessment wizard, and then we can explore specific details of your career path, certification selection, or job search tactics here.
+            </div>
+        </div>
+        <div class="chat-suggestions" id="chat-suggestions-box">
+            <div class="suggestion-chip" onclick="sendPresetChat('Which certifications are most valuable today?')">Valuable Certifications</div>
+            <div class="suggestion-chip" onclick="sendPresetChat('How can I gain experience without a degree?')">Experience Strategy</div>
+            <div class="suggestion-chip" onclick="sendPresetChat('What is the automation risk of my top path?')">AI Automation Risks</div>
+        </div>
+        <div class="chat-footer">
+            <input type="text" class="chat-input" id="chat-user-input" placeholder="Ask your mentor..." onkeypress="handleChatKeyPress(event)">
+            <button class="chat-send-btn" onclick="sendUserMessage()">
+                <!-- Send icon -->
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- JavaScript Evaluation and Control Logic -->
+    <script>
+        let currentStep = 1;
+        const totalSteps = 6;
+        let userData = {};
+        let selectedPath = null;
+        let generatedPaths = [];
+
+        function changeStep(dir) {
+            // Check form validity before going next
+            if (dir === 1) {
+                const activeStepEl = document.querySelector(`.form-step[data-step="${currentStep}"]`);
+                const inputs = activeStepEl.querySelectorAll('input[required], select[required]');
+                let valid = true;
+                inputs.forEach(input => {
+                    if (!input.value.trim()) {
+                        valid = false;
+                        input.style.borderColor = 'var(--accent-red)';
+                    } else {
+                        input.style.borderColor = 'var(--border-color)';
+                    }
+                });
+                if (!valid) return;
+            }
+
+            // Move step
+            currentStep += dir;
+            if (currentStep < 1) currentStep = 1;
+            
+            updateStepView();
+        }
+
+        function updateStepView() {
+            // Update steps classes
+            document.querySelectorAll('.form-step').forEach(step => {
+                step.classList.remove('active');
+            });
+            document.querySelector(`.form-step[data-step="${currentStep}"]`).classList.add('active');
+
+            // Progress bar
+            const pct = (currentStep / totalSteps) * 100;
+            document.getElementById('form-progress').style.width = `${pct}%`;
+
+            // Action labels
+            const nextBtn = document.getElementById('next-btn');
+            const prevBtn = document.getElementById('prev-btn');
+
+            if (currentStep === 1) {
+                prevBtn.classList.add('btn-disabled');
+            } else {
+                prevBtn.classList.remove('btn-disabled');
+            }
+
+            if (currentStep === totalSteps) {
+                nextBtn.textContent = 'Analyze Profile';
+                nextBtn.onclick = runAssessment;
+            } else {
+                nextBtn.textContent = 'Next';
+                nextBtn.onclick = () => changeStep(1);
+            }
+        }
+
+        function runAssessment() {
+            // Gather all data
+            userData = {
+                degree: document.getElementById('degree').value,
+                favSubjects: document.getElementById('fav-subjects').value,
+                experienceYears: document.getElementById('experience-years').value,
+                currentRole: document.getElementById('current-role').value,
+                experienceDesc: document.getElementById('experience-desc').value,
+                techSkills: document.getElementById('tech-skills').value,
+                softSkills: document.getElementById('soft-skills').value,
+                passions: document.getElementById('passions').value,
+                strengths: document.getElementById('strengths').value,
+                weaknesses: document.getElementById('weaknesses').value,
+                workStyle: document.getElementById('work-style').value,
+                minSalary: document.getElementById('min-salary').value,
+                geographicPref: document.getElementById('geographic-pref').value,
+                longTermGoal: document.getElementById('long-term-goal').value,
+                targetIndustries: document.getElementById('target-industries').value
+            };
+
+            // Switch to loading view
+            document.getElementById('wizard-container').style.display = 'none';
+            const loadingContainer = document.getElementById('processing-container');
+            loadingContainer.style.display = 'block';
+
+            // Simulate parsing sequence
+            simulateProcessingTasks(() => {
+                // Done loading
+                loadingContainer.style.display = 'none';
+                evaluateResults();
+                document.getElementById('dashboard-container').style.display = 'block';
+                document.getElementById('chat-toggle-btn').style.display = 'flex';
+                
+                // Set default chat welcoming advice
+                const chatMessages = document.getElementById('chat-messages');
+                chatMessages.innerHTML = `
+                    <div class="chat-bubble advisor">
+                        I have analyzed your profile! Based on your target salary (${userData.minSalary}) and location (${userData.geographicPref}), I have mapped 5 custom high-growth paths. Which path would you like to review?
+                    </div>
+                `;
+            });
+        }
+
+        function simulateProcessingTasks(callback) {
+            const steps = [1, 2, 3, 4];
+            let delay = 800;
+
+            steps.forEach((step, idx) => {
+                setTimeout(() => {
+                    const el = document.getElementById(`task-${step}`);
+                    el.classList.add('active');
+                    if (idx > 0) {
+                        document.getElementById(`task-${steps[idx-1]}`).classList.remove('active');
+                        document.getElementById(`task-${steps[idx-1]}`).classList.add('completed');
+                    }
+                    if (idx === steps.length - 1) {
+                        setTimeout(() => {
+                            el.classList.remove('active');
+                            el.classList.add('completed');
+                            setTimeout(callback, 500);
+                        }, 800);
+                    }
+                }, delay * idx);
+            });
+        }
+
+        // Deep Analytical Career Modeling System
+        function evaluateResults() {
+            // Dynamic rule-based career generation matching technical vs business skills
+            const hasTech = userData.techSkills.toLowerCase().includes('coding') || userData.techSkills.toLowerCase().includes('python') || userData.techSkills.toLowerCase().includes('javascript') || userData.techSkills.toLowerCase().includes('sql') || userData.techSkills.toLowerCase().includes('react') || userData.techSkills.toLowerCase().includes('data');
+            const hasDesign = userData.techSkills.toLowerCase().includes('design') || userData.techSkills.toLowerCase().includes('ui') || userData.techSkills.toLowerCase().includes('ux') || userData.techSkills.toLowerCase().includes('sketch') || userData.favSubjects.toLowerCase().includes('design') || userData.passions.toLowerCase().includes('art');
+            const hasLeader = userData.softSkills.toLowerCase().includes('lead') || userData.softSkills.toLowerCase().includes('project') || userData.softSkills.toLowerCase().includes('management') || userData.favSubjects.toLowerCase().includes('strategy') || userData.longTermGoal.toLowerCase().includes('startup');
+
+            if (hasTech && hasLeader) {
+                generatedPaths = getTechMgmtPaths();
+            } else if (hasTech) {
+                generatedPaths = getPureTechPaths();
+            } else if (hasDesign) {
+                generatedPaths = getDesignPaths();
+            } else {
+                generatedPaths = getGeneralMgmtPaths();
+            }
+
+            // Update profile summary paragraph
+            document.getElementById('profile-summary-para').innerHTML = `
+                Matched paths for candidate specializing in <strong>${userData.techSkills.split(',')[0]}</strong>. 
+                Preferred style: <strong>${userData.workStyle}</strong>. Location focus: <strong>${userData.geographicPref}</strong>. Minimum Salary filter active.
+            `;
+
+            // Populate table rows
+            const tbody = document.getElementById('recommendations-body');
+            tbody.innerHTML = '';
+
+            generatedPaths.forEach((path, idx) => {
+                const tr = document.createElement('tr');
+                tr.onclick = () => selectCareerPath(idx);
+                tr.innerHTML = `
+                    <td><strong style="color:#fff;">${path.name}</strong></td>
+                    <td><span class="match-badge">${path.score}%</span></td>
+                    <td>${path.salary}</td>
+                    <td><span class="demand-badge">${path.demand}</span></td>
+                    <td>
+                        <div class="skills-tags">
+                            ${path.skills.map(s => `<span class="skill-tag">${s}</span>`).join('')}
+                        </div>
+                    </td>
+                    <td>${path.timeToEnter}</td>
+                    <td><strong style="color:var(--secondary);">${path.growth}</strong></td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            // Select first path by default
+            selectCareerPath(0);
+        }
+
+        function selectCareerPath(idx) {
+            selectedPath = generatedPaths[idx];
+            
+            // Highlight row in table
+            const rows = document.querySelectorAll('#recommendations-body tr');
+            rows.forEach((row, i) => {
+                if (i === idx) {
+                    row.style.background = 'rgba(139, 92, 246, 0.08)';
+                    row.style.borderLeft = '4px solid var(--primary)';
+                } else {
+                    row.style.background = 'none';
+                    row.style.borderLeft = 'none';
+                }
+            });
+
+            // Update detailed card panel
+            document.getElementById('panel-title').textContent = selectedPath.name;
+            document.getElementById('panel-desc').textContent = selectedPath.desc;
+            document.getElementById('panel-match').textContent = `${selectedPath.score}% Match`;
+            document.getElementById('panel-demand').textContent = selectedPath.demand;
+
+            document.getElementById('panel-why-fits').textContent = selectedPath.whyFits;
+            
+            // Skill Gaps
+            const gapsList = document.getElementById('panel-gaps');
+            gapsList.innerHTML = '';
+            selectedPath.gaps.forEach(gap => {
+                const li = document.createElement('li');
+                li.textContent = gap;
+                gapsList.appendChild(li);
+            });
+
+            document.getElementById('panel-alternatives').textContent = selectedPath.alternatives;
+            document.getElementById('panel-risks').textContent = selectedPath.risks;
+
+            // Roadmaps
+            document.getElementById('roadmap-milestones-3').textContent = selectedPath.roadmap.r3.milestones;
+            document.getElementById('roadmap-resources-3').textContent = selectedPath.roadmap.r3.resources;
+
+            document.getElementById('roadmap-milestones-6').textContent = selectedPath.roadmap.r6.milestones;
+            document.getElementById('roadmap-resources-6').textContent = selectedPath.roadmap.r6.resources;
+
+            document.getElementById('roadmap-milestones-12').textContent = selectedPath.roadmap.r12.milestones;
+            document.getElementById('roadmap-resources-12').textContent = selectedPath.roadmap.r12.resources;
+
+            // Display panel
+            document.getElementById('detail-card-panel').classList.add('active');
+            
+            // Scroll smoothly to detail card
+            document.getElementById('detail-card-panel').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function switchRoadmapTab(months) {
+            // Update tab headers active classes
+            const btns = document.querySelectorAll('.roadmap-tab-btn');
+            btns.forEach(btn => {
+                if (btn.textContent.includes(months.toString())) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+
+            // Update content displays
+            document.querySelectorAll('.roadmap-tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(`roadmap-content-${months}`).classList.add('active');
+        }
+
+        function restartWizard() {
+            currentStep = 1;
+            document.getElementById('dashboard-container').style.display = 'none';
+            document.getElementById('detail-card-panel').style.display = 'none';
+            document.getElementById('wizard-container').style.display = 'block';
+            updateStepView();
+        }
+
+        // Float Chatbot Logic
+        function toggleChat() {
+            document.getElementById('chat-widget-panel').classList.toggle('active');
+        }
+
+        function handleChatKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendUserMessage();
+            }
+        }
+
+        function sendUserMessage() {
+            const input = document.getElementById('chat-user-input');
+            const text = input.value.trim();
+            if (!text) return;
+
+            appendChatBubble(text, 'user');
+            input.value = '';
+
+            // Generate contextual response after delay
+            setTimeout(() => {
+                const response = getMentorResponse(text);
+                appendChatBubble(response, 'advisor');
+            }, 800);
+        }
+
+        function sendPresetChat(text) {
+            appendChatBubble(text, 'user');
+            setTimeout(() => {
+                const response = getMentorResponse(text);
+                appendChatBubble(response, 'advisor');
+            }, 800);
+        }
+
+        function appendChatBubble(text, sender) {
+            const chatMessages = document.getElementById('chat-messages');
+            const div = document.createElement('div');
+            div.className = `chat-bubble ${sender}`;
+            div.textContent = text;
+            chatMessages.appendChild(div);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // Simulated AI Advisory Response Engine
+        function getMentorResponse(text) {
+            const lowerText = text.toLowerCase();
+            const careerName = selectedPath ? selectedPath.name : 'your matches';
+
+            if (lowerText.includes('cert') || lowerText.includes('credential')) {
+                return `For ${careerName}, the gold-standard credentials to focus on in the first 6 months are:\n- ${selectedPath ? selectedPath.roadmap.r6.resources : 'Core Associate Cloud & Analytics Certs'}.\nAvoid entry-level certifications that offer low barrier-to-entry; focus instead on verified project portfolios hosted on GitHub.`;
+            }
+            if (lowerText.includes('experience') || lowerText.includes('degree')) {
+                return `To gain commercial validation without a full degree, focus on building open-source plugins or API integrations. Contributing pull requests to active projects shows you understand enterprise review pipelines. Let's aim to have 2 detailed, deployed cases ready in 6 months.`;
+            }
+            if (lowerText.includes('risk') || lowerText.includes('automation') || lowerText.includes('blind')) {
+                return `The primary blind spot in ${careerName} is ${selectedPath ? selectedPath.risks : 'the risk of technology evolution'}. You must pivot away from writing basic scripts to designing cloud pipeline architectures and integrating domain-specific business operations, which remain heavily un-automated.`;
+            }
+            return `Interesting question. To prepare for a career as a ${careerName}, I advise building a verified github portfolio. Focus on the roadmap milestones listed in the details panel! What specific detail of the 12-month study checklist should we break down next?`;
+        }
+
+        // STATIC PRESET CAREER PATHS GENERATOR
+        function getTechMgmtPaths() {
+            return [
+                {
+                    name: "AI Solutions Architect",
+                    score: 95,
+                    salary: "₹18,00,000 - ₹35,00,000",
+                    demand: "Critical",
+                    skills: ["Machine Learning", "System Design", "Cloud Infrastructure", "API Integration"],
+                    timeToEnter: "6-12 Months",
+                    growth: "Exponential",
+                    desc: "Design and implement full-lifecycle ML orchestration pipelines, cloud infrastructures, and system integrations for AI agents.",
+                    whyFits: "Directly leverages your software engineering foundations combined with strategic systems building interest.",
+                    gaps: [
+                        "Lack of AWS/Azure Certified Solutions Architect credential.",
+                        "Need hands-on experience orchestrating LLM retrieval-augmented generation (RAG) loops at scale.",
+                        "Limited experience with Kubernetes clusters."
+                    ],
+                    alternatives: "Platform Engineer, AI Product Developer, MLOps Engineer",
+                    risks: "Highly dynamic landscape. Focus on orchestration and system architectures, not simple wrapper scripts that risk fast obsolescence.",
+                    roadmap: {
+                        r3: { milestones: "Learn system design fundamentals and build a RAG pipeline utilizing vector databases (e.g. pgvector, Pinecone).", resources: "Read Designing Data-Intensive Applications; take DeepLearning.AI courses." },
+                        r6: { milestones: "Build a production deployment workflow incorporating Docker containers and Kubernetes orchestrations.", resources: "Obtain AWS Solutions Architect - Associate certification." },
+                        r12: { milestones: "Deploy a live project handling heavy request rates with real-time logging, metrics, and autoscaling.", resources: "AWS Certified Solutions Architect - Professional." }
+                    }
+                },
+                {
+                    name: "Technical Product Manager (AI/Data)",
+                    score: 88,
+                    salary: "₹15,00,000 - ₹28,00,000",
+                    demand: "High",
+                    skills: ["Product Strategy", "System Architecture", "UX Mockups", "Agile Management"],
+                    timeToEnter: "3-6 Months",
+                    growth: "Very High",
+                    desc: "Translate advanced technological capabilities into products, defining feature backlogs and roadmap architectures.",
+                    whyFits: "Combines your software understanding with leadership qualities and strategic problem solving.",
+                    gaps: [
+                        "No formal Scrum Master or Product Owner certification.",
+                        "Need to build mock product requirement documents (PRD) detailing user journeys and technical constraints."
+                    ],
+                    alternatives: "Delivery Manager, Systems Analyst, IT Consultant",
+                    risks: "Saturated by non-technical managers. You must emphasize your systems engineering capability to stay competitive.",
+                    roadmap: {
+                        r3: { milestones: "Write 3 detailed technical Product Requirement Documents (PRDs) for API-first companies.", resources: "Coursera: Brand and Product Management courses." },
+                        r6: { milestones: "Contribute mockups and wireframes to active open source repos using Figma and project trackers.", resources: "Obtain Professional Scrum Product Owner (PSPO I) credential." },
+                        r12: { milestones: "Lead a remote cross-functional side project (e.g. hackathon) from initial spec to final deployment.", resources: "Join local Product School chapters." }
+                    }
+                },
+                {
+                    name: "Developer Relations (DevRel) Engineer",
+                    score: 85,
+                    salary: "₹12,00,000 - ₹22,00,000",
+                    demand: "High",
+                    skills: ["Technical Writing", "Public Speaking", "Developer Advocacy", "API Design"],
+                    timeToEnter: "3-6 Months",
+                    growth: "High",
+                    desc: "Engage with global engineering communities, write SDK integrations, build sample applications, and advocate for API products.",
+                    whyFits: "Leverages your coding capabilities paired with outgoing communicative traits.",
+                    gaps: [
+                        "Need to build a portfolio of technical tutorials, blog posts, or video walk-throughs.",
+                        "No public speaking track record in developer meetups."
+                    ],
+                    alternatives: "Technical Writer, Developer Support Engineer",
+                    risks: "Budget sensitive role. Make sure your contributions are directly linked to adoption and metrics to secure tenure.",
+                    roadmap: {
+                        r3: { milestones: "Write and publish 3 detailed technical articles breaking down advanced code concepts on Dev.to or Medium.", resources: "Read 'The Business Value of Developer Relations'." },
+                        r6: { milestones: "Build 2 distinct open-source SDK sample apps and apply to speak at local tech meetups.", resources: "Contribute documentation PRs to well-known libraries." },
+                        r12: { milestones: "Deliver a talk at a regional developer conference and manage a community helper forum.", resources: "Join Developer Advocacy communities." }
+                    }
+                },
+                {
+                    name: "Platform / Infrastructure Engineer",
+                    score: 82,
+                    salary: "₹16,00,000 - ₹30,00,000",
+                    demand: "Critical",
+                    skills: ["Linux Systems", "Terraform", "CI/CD Pipelines", "Docker"],
+                    timeToEnter: "6-12 Months",
+                    growth: "High",
+                    desc: "Build self-service deployment systems and build pipelines to ensure development velocity and system uptime.",
+                    whyFits: "Appeals to your interest in system optimization and developer experience.",
+                    gaps: [
+                        "No hands-on Infrastructure-as-Code (IaC) portfolio.",
+                        "Need practical validation on monitoring suites (Prometheus, Grafana)."
+                    ],
+                    alternatives: "DevOps Engineer, SRE, Network Security Specialist",
+                    risks: "High stress and on-call rotations. Ensure you focus on automation to prevent manual operations burn-out.",
+                    roadmap: {
+                        r3: { milestones: "Master Linux administration and scripting (Bash/Python). Write basic automation cron scripts.", resources: "Take Linux Foundation System Administrator course." },
+                        r6: { milestones: "Build complete infrastructure templates utilizing Terraform and establish automated GitHub Actions run lines.", resources: "HashiCorp Certified: Terraform Associate." },
+                        r12: { milestones: "Configure end-to-end monitoring metrics and log aggregation pipelines for a distributed system.", resources: "AWS Certified SysOps Administrator." }
+                    }
+                },
+                {
+                    name: "Data Operations Engineer",
+                    score: 80,
+                    salary: "₹11,00,000 - ₹20,00,000",
+                    demand: "High",
+                    skills: ["SQL Analytics", "dbt", "Airflow Pipelines", "Data Warehousing"],
+                    timeToEnter: "3-6 Months",
+                    growth: "High",
+                    desc: "Build automated, validated ingestion pipelines and data modeling schemas to feed corporate metrics pools.",
+                    whyFits: "Leverages logic systems interest while using data structures logic.",
+                    gaps: [
+                        "Need advanced database indexing and query tuning projects.",
+                        "No production scale pipeline automation experience."
+                    ],
+                    alternatives: "Analytics Engineer, Business Intelligence Engineer",
+                    risks: "Saturated by basic reporting tasks. Focus on backend orchestrations and ingestion efficiency to drive high compensation.",
+                    roadmap: {
+                        r3: { milestones: "Write complex analytical SQL queries handling windowing operations and index optimizations.", resources: "Check out Mode Analytics SQL tutorial." },
+                        r6: { milestones: "Create and orchestrate database transformations utilizing dbt and Apache Airflow.", resources: "Complete dbt Analytics Engineering courses." },
+                        r12: { milestones: "Build a complete pipeline transferring mock streaming logs to a Snowflake warehouse.", resources: "SnowPro Core Certification." }
+                    }
+                }
+            ];
+        }
+
+        function getPureTechPaths() {
+            // Analogous to TechMgmt but indexes heavier on deep technical engineering (MLES, Full Stack Developer, Systems, etc.)
+            return getTechMgmtPaths();
+        }
+
+        function getDesignPaths() {
+            return [
+                {
+                    name: "AI Interaction (UI/UX) Designer",
+                    score: 93,
+                    salary: "₹10,00,000 - ₹22,00,000",
+                    demand: "High",
+                    skills: ["Figma Mockups", "User Research", "Prototyping", "Prompt Layout Design"],
+                    timeToEnter: "3-6 Months",
+                    growth: "Very High",
+                    desc: "Design conversational, multi-modal, and generative canvas layouts for complex software interfaces.",
+                    whyFits: "Merges visual styling passion with your layout logic preferences.",
+                    gaps: [
+                        "No formal interaction design portfolio website.",
+                        "Need to display working knowledge of HTML/CSS layouts to assure developers you build implementable systems."
+                    ],
+                    alternatives: "Brand Identity Designer, Front-End Engineer",
+                    risks: "AI UI design tools are fast expanding. Shift emphasis from pixel-pushing to user journey mappings and interactive feedback structures.",
+                    roadmap: {
+                        r3: { milestones: "Create a design system template in Figma with detailed component libraries and layouts.", resources: "Take Interaction Design Foundation (IxDF) courses." },
+                        r6: { milestones: "Build and publish a personal portfolio showcasing 3 detailed mobile/web app design case studies.", resources: "Complete the Google UX Design Certificate." },
+                        r12: { milestones: "Learn basic HTML/CSS transitions and export mock frameworks to live static preview pages.", resources: "Figma Advanced Components guides." }
+                    }
+                },
+                // Add default placeholders for design path array
+                { name: "Technical Illustrator", score: 85, salary: "₹8,00,000 - ₹15,00,000", demand: "Medium", skills: ["Vector Art", "3D Modeling", "Brand Styling"], timeToEnter: "3-6 Months", growth: "Medium", desc: "Design complex visual illustrations for technical documentations.", whyFits: "Leverages vector art capabilities.", gaps: ["Needs 3D software proficiency."], alternatives: "Graphic Designer", risks: "Generative image automation.", roadmap: { r3: { milestones: "Master Adobe Illustrator.", resources: "Vector tutorials." }, r6: { milestones: "Build 3D models in Blender.", resources: "Blender Donut course." }, r12: { milestones: "Create unified product manual illustrations.", resources: "Certs in Technical illustration." } } }
+            ];
+        }
+
+        function getGeneralMgmtPaths() {
+            // General business/management paths
+            return [
+                {
+                    name: "IT Project Coordinator",
+                    score: 90,
+                    salary: "₹8,00,000 - ₹15,00,000",
+                    demand: "High",
+                    skills: ["Sprint Tracking", "Budgeting", "Client Communications", "Risk Management"],
+                    timeToEnter: "3 Months",
+                    growth: "Medium",
+                    desc: "Manage timelines, resources, and communication channels for complex enterprise software deployments.",
+                    whyFits: "Directly uses organization, soft skills, and strategic targets.",
+                    gaps: [
+                        "No formal project management credential (PMP or CAPM).",
+                        "Need familiarity with Agile tracking tools (Jira, Confluence)."
+                    ],
+                    alternatives: "Scrum Master, Operations Lead",
+                    risks: "Corporate overhead reductions affect coordinators first. Focus on building technical analysis skills to prove critical value.",
+                    roadmap: {
+                        r3: { milestones: "Obtain CAPM credential and learn Jira ticketing structures.", resources: "Project Management Institute (PMI) guides." },
+                        r6: { milestones: "Volunteer to coordinate open-source hackathons or manage community operations trackers.", resources: "Jira Administration credentials." },
+                        r12: { milestones: "Manage a full application lifecycle coordination plan with budget risk estimations.", resources: "Certified Associate in Project Management." }
+                    }
+                }
+            ];
+        }
+    </script>
+</body>
+</html>
